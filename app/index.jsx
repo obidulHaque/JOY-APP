@@ -55,14 +55,14 @@ const styles = StyleSheet.create({
     paddingTop: 80,
   },
   logo: {
-    width: 50, // Values should not have quotes or units
+    width: 50,
     height: 50,
   },
   logoText: {
-    marginLeft: 10, // Adds spacing between Image and Text
+    marginLeft: 10,
     fontSize: 50,
     fontWeight: "bold",
-    color: "white", // Ensures the text is visible on a light background
+    color: "white",
   },
   cards: {
     maxWidth: 380,
