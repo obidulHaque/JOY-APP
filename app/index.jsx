@@ -1,12 +1,21 @@
 import React from "react";
-import { View, Text, Image, ScrollView, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  StyleSheet,
+  TouchableOpacity,
+} from "react-native";
 import { Link } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../constants";
+import { StatusBar } from "expo-status-bar";
+import { useRouter } from "expo-router";
 import CustomButton from "../components/CustomButton";
-import { router } from "expo-router";
 
 const App = () => {
+  const router = useRouter();
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView contentContainerStyle={{ height: "100%" }}>
@@ -34,15 +43,13 @@ const App = () => {
             Where Creativity Meets innovation: Embark on a Journey of Limitless
             Exploration with JOY
           </Text>
-          <Link href={"/sign-in"}>
-            <View className="bg-secondary rounded-xl min-h-[62px] flex flex-row justify-center items-center mt-10 px-10">
-              <Text className="font-psemibold text-lg">
-                Continue with Email
-              </Text>
-            </View>
-          </Link>
+          <CustomButton
+            title={"Continue with Email"}
+            handlePress={() => router.push("/sign-in")}
+          />
         </View>
       </ScrollView>
+      <StatusBar backgroundColor="#161622" style="light" />
     </SafeAreaView>
   );
 };
@@ -69,10 +76,6 @@ const styles = StyleSheet.create({
     width: "100%",
     height: 298,
     marginTop: 20,
-  },
-  button: {
-    width: "100%",
-    height: 30,
   },
 });
 

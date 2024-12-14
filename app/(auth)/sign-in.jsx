@@ -3,11 +3,16 @@ import React from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import FormField from "../../components/FormField";
+import { Link } from "expo-router";
+import CustomButton from "../../components/CustomButton";
 
 const SignIn = () => {
   return (
     <SafeAreaView className="bg-primary h-full">
-      <ScrollView contentContainerStyle={{ height: "100&" }} className="px-10">
+      <ScrollView
+        contentContainerStyle={{ height: "100%" }}
+        className="px-10 py-24"
+      >
         <View style={styles.logoContainer}>
           <Image
             source={images.logoSmall}
@@ -20,6 +25,14 @@ const SignIn = () => {
           Sign In
         </Text>
         <FormField title={"Username"} />
+        <FormField title={"Password"} />
+        <CustomButton title={"Log In"} />
+        <Text className="font-plight text-white pt-10">
+          Don't have an account?{" "}
+          <Link className="text-[#FFA300] " href={"/sign-up"}>
+            Signup
+          </Link>{" "}
+        </Text>
       </ScrollView>
     </SafeAreaView>
   );
