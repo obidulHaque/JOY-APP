@@ -3,7 +3,9 @@ import { Text, TouchableOpacity, StyleSheet } from "react-native";
 const CustomButton = ({ title, handlePress, isLoading }) => {
   return (
     <TouchableOpacity style={styles.buttonContainer} onPress={handlePress}>
-      <Text style={styles.buttonText}>{title} </Text>
+      <Text style={styles.buttonText}>
+        {isLoading ? "Please Wait..." : title}{" "}
+      </Text>
     </TouchableOpacity>
   );
 };

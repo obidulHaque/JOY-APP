@@ -9,7 +9,7 @@ import {
 import React, { useState } from "react";
 import { icons } from "../constants";
 
-export default function FormField({ title }) {
+export default function FormField({ title, handleChangeText }) {
   const [showPassword, setShowPassword] = useState(false);
   return (
     <View>
@@ -18,6 +18,7 @@ export default function FormField({ title }) {
         <TextInput
           style={styles.input}
           secureTextEntry={!showPassword && title === "Password"}
+          onChangeText={handleChangeText}
         />
         {title === "Password" && (
           <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
