@@ -28,9 +28,9 @@ const SignIn = () => {
     // console.log(formData.email, formData.password, formData.usename);
     try {
       const res = await createUser(
-        formData.usename,
         formData.email,
-        formData.password
+        formData.password,
+        formData.usename
       );
       console.log(res);
       router.replace("/home");
