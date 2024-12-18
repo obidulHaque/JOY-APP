@@ -1,21 +1,18 @@
 import React from "react";
-import {
-  View,
-  Text,
-  Image,
-  ScrollView,
-  StyleSheet,
-  TouchableOpacity,
-} from "react-native";
-import { Link } from "expo-router";
+import { View, Text, Image, ScrollView, StyleSheet } from "react-native";
+import { Redirect } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../constants";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import CustomButton from "../components/CustomButton";
+import { useAuthContext } from "../context/useAuthcontext";
 
 const App = () => {
+  const { isLoading, isLogged } = useAuthContext();
   const router = useRouter();
+  if (!isLoading && isLogged) return <Redirect href={"/home"} />;
+
   return (
     <SafeAreaView className="bg-primary h-full">
       <ScrollView contentContainerStyle={{ height: "100%" }}>

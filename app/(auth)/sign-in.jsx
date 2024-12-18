@@ -50,7 +50,7 @@ const SignIn = () => {
           />
           <FormField
             title={"Password"}
-            handleChangeText={(e) => setForm({ ...form, username: e })}
+            handleChangeText={(e) => setForm({ ...form, password: e })}
           />
           <CustomButton
             title={"Log In"}
