@@ -6,12 +6,12 @@ import { images } from "../constants";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from "expo-router";
 import CustomButton from "../components/CustomButton";
-import { useAuthContext } from "../context/useAuthcontext";
+// import { useAuthContext } from "../context/useAuthcontext";
 
 const App = () => {
-  const { isLoading, isLogged } = useAuthContext();
+  // const { isLoading, isLogged } = useAuthContext();
   const router = useRouter();
-  if (!isLoading && isLogged) return <Redirect href={"/home"} />;
+  // if (!isLoading && isLogged) return <Redirect href={"/home"} />;
 
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -42,7 +42,7 @@ const App = () => {
           </Text>
           <CustomButton
             title={"Continue with Email"}
-            handlePress={() => router.push("/sign-in")}
+            handlePress={() => router.push("/create")}
           />
         </View>
       </ScrollView>

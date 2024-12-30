@@ -5,26 +5,58 @@ import { images } from "../../constants";
 import FormField from "../../components/FormField";
 import { Link } from "expo-router";
 import CustomButton from "../../components/CustomButton";
-import { signIn } from "../../lib/appwrite";
 import { useRouter } from "expo-router";
+import Axios from "../../api/axios";
+import AwesomeAlert from "react-native-awesome-alerts";
 
 const SignIn = () => {
-  const route = useRouter();
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [form, setForm] = useState({
+  const [formData, setForm] = useState({
     email: "",
     password: "",
   });
+  const [alertData, setAlertData] = useState({
+    show: false,
+    title: "",
+    message: "",
+    success: false,
+  });
   const handleSubmit = async () => {
     setLoading(true);
-    if (form.email === "" || form.password === "") {
-      Alert.alert("error", "plz fill all field");
+    if (formData.email === "" || formData.password === "") {
+      setAlertData({
+        show: true,
+        title: "Error",
+        message: "Please fill all fields.",
+        success: false,
+      });
+      setLoading(false);
+      return;
     }
+
     try {
-      await signIn(form.email, form.password);
-      route.replace("/home");
+      // API call to sign-up
+      const res = await Axios.post("/sign-in", formData);
+      setAlertData({
+        show: true,
+        title: "Success",
+        message: "Sign-In successful! Redirecting...",
+        success: true,
+      });
+
+      // Redirect after success
+      setTimeout(() => {
+        setAlertData({ ...alertData, show: false });
+        router.replace("/home");
+      }, 2000);
     } catch (error) {
-      Alert.alert("error", error.message);
+      setAlertData({
+        show: true,
+        title: "Error",
+        message: error.response?.data?.message || "Sign-up failed. Try again.",
+        success: false,
+      });
     } finally {
       setLoading(false);
     }
@@ -46,11 +78,11 @@ const SignIn = () => {
           </Text>
           <FormField
             title={"Email"}
-            handleChangeText={(e) => setForm({ ...form, email: e })}
+            handleChangeText={(e) => setForm({ ...formData, email: e })}
           />
           <FormField
             title={"Password"}
-            handleChangeText={(e) => setForm({ ...form, password: e })}
+            handleChangeText={(e) => setForm({ ...formData, password: e })}
           />
           <CustomButton
             title={"Log In"}
@@ -64,6 +96,18 @@ const SignIn = () => {
             </Link>{" "}
           </Text>
         </View>
+        <AwesomeAlert
+          show={alertData.show}
+          showProgress={false}
+          title={alertData.title}
+          message={alertData.message}
+          closeOnTouchOutside={!alertData.success}
+          closeOnHardwareBackPress={!alertData.success}
+          showConfirmButton={true}
+          confirmText={alertData.success ? "OK" : "Try Again"}
+          confirmButtonColor={alertData.success ? "#28a745" : "#d9534f"}
+          onConfirmPressed={() => setAlertData({ ...alertData, show: false })}
+        />
       </ScrollView>
     </SafeAreaView>
   );

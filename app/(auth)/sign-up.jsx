@@ -1,41 +1,67 @@
-import { Alert, Image, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Image, ScrollView, StyleSheet, Text, View } from "react-native";
 import React, { useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { images } from "../../constants";
 import FormField from "../../components/FormField";
 import { Link } from "expo-router";
 import CustomButton from "../../components/CustomButton";
-import { createUser } from "../../lib/appwrite";
 import { useRouter } from "expo-router";
+import Axios from "../../api/axios";
+import AwesomeAlert from "react-native-awesome-alerts";
 
-const SignIn = () => {
+const SignUp = () => {
   const router = useRouter();
   const [formData, setFormData] = useState({
-    usename: "",
+    username: "",
     email: "",
     password: "",
   });
   const [submit, setSubmit] = useState(false);
+  const [alertData, setAlertData] = useState({
+    show: false,
+    title: "",
+    message: "",
+    success: false,
+  });
   const formSubmit = async () => {
     setSubmit(true);
     if (
-      formData.usename === "" ||
+      formData.username === "" ||
       formData.email === "" ||
       formData.password === ""
     ) {
-      Alert.alert("Error", "Plz fill All fields");
+      setAlertData({
+        show: true,
+        title: "Error",
+        message: "Please fill all fields.",
+        success: false,
+      });
+      setSubmit(false);
+      return;
     }
-    // console.log(formData.email, formData.password, formData.usename);
+
     try {
-      const res = await createUser(
-        formData.email,
-        formData.password,
-        formData.usename
-      );
-      console.log(res);
-      router.replace("/home");
+      // API call to sign-up
+      const res = await Axios.post("/sign-up", formData);
+      setAlertData({
+        show: true,
+        title: "Success",
+        message: "Sign-up successful! Redirecting...",
+        success: true,
+      });
+
+      // Redirect after success
+      setTimeout(() => {
+        setAlertData({ ...alertData, show: false });
+        router.replace("/home");
+      }, 2000);
     } catch (error) {
-      Alert.alert("errror", error.message);
+      setAlertData({
+        show: true,
+        title: "Error",
+        message: error.response?.data?.message || "Sign-up failed. Try again.",
+        success: false,
+      });
     } finally {
       setSubmit(false);
     }
@@ -60,7 +86,7 @@ const SignIn = () => {
           </Text>
           <FormField
             title={"Username"}
-            handleChangeText={(e) => setFormData({ ...formData, usename: e })}
+            handleChangeText={(e) => setFormData({ ...formData, username: e })}
           />
           <FormField
             title={"Email"}
@@ -82,12 +108,25 @@ const SignIn = () => {
             </Link>{" "}
           </Text>
         </View>
+        {/* Awesome Alert */}
+        <AwesomeAlert
+          show={alertData.show}
+          showProgress={false}
+          title={alertData.title}
+          message={alertData.message}
+          closeOnTouchOutside={!alertData.success}
+          closeOnHardwareBackPress={!alertData.success}
+          showConfirmButton={true}
+          confirmText={alertData.success ? "OK" : "Try Again"}
+          confirmButtonColor={alertData.success ? "#28a745" : "#d9534f"}
+          onConfirmPressed={() => setAlertData({ ...alertData, show: false })}
+        />
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-export default SignIn;
+export default SignUp;
 
 const styles = StyleSheet.create({
   signUpContainer: {

@@ -9,41 +9,32 @@ import {
 import React, { useState } from "react";
 import { icons } from "../constants";
 
-export default function FormField({ title, handleChangeText, value }) {
-  const [showPassword, setShowPassword] = useState(false);
+export default function SearchInput({ title, handleChangeText }) {
   return (
     <View>
-      <Text style={styles.title}>{title}</Text>
       <View style={styles.InputContainer}>
         <TextInput
-          value={value}
           style={styles.input}
-          secureTextEntry={!showPassword && title === "Password"}
           onChangeText={handleChangeText}
+          placeholder="Search for a video topic"
+          placeholderTextColor={"#CDCDE0"}
         />
-        {title === "Password" && (
-          <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
-            <Image
-              source={showPassword ? icons.eye : icons.eyeHide}
-              style={styles.icon}
-              resizeMode="contain"
-            />
-          </TouchableOpacity>
-        )}
+        <TouchableOpacity>
+          <Image
+            source={icons.search}
+            style={styles.icon}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: {
-    color: "#CDCDE0",
-    fontSize: 15,
-    marginTop: 10,
-  },
   InputContainer: {
     width: "100%",
-    height: 40,
+    height: 50,
     backgroundColor: "#1E1E2D",
     borderRadius: 10,
     flexDirection: "row",
@@ -58,7 +49,7 @@ const styles = StyleSheet.create({
     height: "100%",
   },
   icon: {
-    width: 30,
-    height: 30,
+    width: 20,
+    height: 20,
   },
 });
