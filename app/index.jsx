@@ -42,7 +42,7 @@ const App = () => {
           </Text>
           <CustomButton
             title={"Continue with Email"}
-            handlePress={() => router.push("/create")}
+            handlePress={() => router.push("/sign-in")}
           />
         </View>
       </ScrollView>

@@ -6,8 +6,10 @@ import FormField from "../../components/FormField";
 import { Link } from "expo-router";
 import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
-import Axios from "../../api/axios";
+// import Axios from "../../api/axios";
+import axios from "axios";
 import AwesomeAlert from "react-native-awesome-alerts";
+import Axios from "../../api/axios";
 
 const SignIn = () => {
   const router = useRouter();
@@ -38,6 +40,7 @@ const SignIn = () => {
     try {
       // API call to sign-up
       const res = await Axios.post("/sign-in", formData);
+
       setAlertData({
         show: true,
         title: "Success",
