@@ -14,18 +14,22 @@ import {
 import { icons } from "../../constants";
 import FormField from "../../components/FormField";
 import { uploadFile } from "../../lib/uploadFile";
-// import { useGlobalContext } from "../../context/GlobalProvider";
+import { useAuthContext } from "../../context/useAuthcontext";
 import CustomButton from "../../components/CustomButton";
 import * as ImagePicker from "expo-image-picker";
 import { useVideoPlayer, VideoView } from "expo-video";
+import Axios from "../../api/axios";
 
 const Create = () => {
+  const { user } = useAuthContext();
   const [uploading, setUploading] = useState(false);
   const [form, setForm] = useState({
+    id: user.id,
     title: "",
     videoUrl: "",
     imageUrl: "",
     prompt: "",
+    createBy: user.username,
   });
 
   const player = useVideoPlayer(form.videoUrl, (playerInstance) => {
@@ -65,16 +69,18 @@ const Create = () => {
   };
 
   const handleSubmit = async () => {
-    const { title, videoUrl, imageUrl, prompt } = form;
+    const { title, videoUrl, imageUrl, prompt, createBy } = form;
 
-    if (!title || !videoUrl || !imageUrl || !prompt) {
+    if ((!title || !videoUrl || !imageUrl || !prompt, !createBy)) {
       return Alert.alert("Validation Error", "All fields are required.");
     }
 
     setUploading(true);
     try {
       // Replace with actual API submission logic
-      console.log("Form Data Submitted:", form);
+
+      const response = await Axios.post("/create-post", form);
+      console.log("Form Data Submitted:", form, response);
 
       Alert.alert("Success", "Your video has been uploaded!");
       setForm({ title: "", videoUrl: "", imageUrl: "", prompt: "" });
@@ -100,9 +106,14 @@ const Create = () => {
         />
 
         <View className="mt-7 space-y-2">
-          <Text className="text-base text-gray-100 font-pmedium">
-            Upload Video
-          </Text>
+          <View className="flex flex-row justify-between">
+            <Text className="text-base text-gray-100 font-pmedium">
+              Upload Video
+            </Text>
+            <Text className="text-sm  text-red-400 font-pmedium">
+              Max 50 MB
+            </Text>
+          </View>
 
           <TouchableOpacity
             onPress={() =>
@@ -138,9 +149,12 @@ const Create = () => {
         </View>
 
         <View className="mt-7 space-y-2">
-          <Text className="text-base text-gray-100 font-pmedium">
-            Thumbnail Image
-          </Text>
+          <View className="flex flex-row justify-between">
+            <Text className="text-base text-gray-100 font-pmedium">
+              Thumbnail Image
+            </Text>
+            <Text className="text-sm text-red-600 font-pmedium">Max 50 MB</Text>
+          </View>
 
           <TouchableOpacity
             onPress={() =>

@@ -1,75 +1,93 @@
-import React, { useState } from "react";
-import { View, Button, Text, StyleSheet } from "react-native";
-import * as ImagePicker from "expo-image-picker";
-import axios from "axios";
+import React, { useEffect, useState, useCallback } from "react";
+import { View, Text, FlatList, RefreshControl, StyleSheet } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { icons, images } from "../../constants";
+import { useAuthContext } from "../../context/useAuthcontext";
 import Axios from "../../api/axios";
+import EmptyState from "../../components/EmptyState";
+import { useFocusEffect } from "@react-navigation/native";
+import VideoCard from "../../components/VideoCard";
 
-export default function App() {
-  const [videoUri, setVideoUri] = useState(null);
-  const [uploadStatus, setUploadStatus] = useState("");
+export default function BookMark() {
+  const [posts, setPosts] = useState(null);
+  const { user } = useAuthContext();
+  const [refreshing, setRefreshing] = useState(false);
 
-  // Function to pick a video
-  const pickVideo = async () => {
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Videos,
-      allowsEditing: true,
-      quality: 1,
-    });
-
-    if (!result.canceled) {
-      setVideoUri(result.assets[0].uri);
-      setUploadStatus("Video selected!");
-    }
-  };
-
-  // Function to upload video
-  const uploadVideo = async () => {
-    if (!videoUri) {
-      setUploadStatus("Please select a video first.");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("video", {
-      uri: videoUri,
-      type: "video/mp4", // Change if using a different format
-      name: "video.mp4",
-    });
-    formData.append("title", "My Video");
-    formData.append("prompt", "Sample Prompt");
-
+  const getAllPost = useCallback(async () => {
     try {
-      const response = await Axios.post("/upload", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      setUploadStatus("Upload successful: " + response.data.url);
+      setRefreshing(true);
+      setPlay(false);
+      const response = await Axios.get(`/book-mark?userId=${user.id}`);
+      setPosts(response.data.posts);
     } catch (error) {
-      console.error("Upload failed:", error);
-      setUploadStatus("Upload failed: " + error.message);
+      console.error("Error fetching posts:", error);
+    } finally {
+      setRefreshing(false);
     }
-  };
+  }, []);
+  const removeBookMark = useCallback(async (postId) => {
+    try {
+      setRefreshing(true);
+      const userId = user.id;
+      console.log("user", userId);
+      await Axios.delete(`/book-mark?postId=${postId}`, {
+        data: { userId },
+        headers: { "Content-Type": "application/json" },
+      });
+      getAllPost();
+    } catch (error) {
+      console.error("Book mark Delete Error", error);
+    } finally {
+      setRefreshing(false);
+    }
+  });
+
+  useFocusEffect(
+    useCallback(() => {
+      getAllPost();
+    }, [getAllPost])
+  );
 
   return (
-    <View style={styles.container}>
-      <Button title="Pick a Video" onPress={pickVideo} />
-      <Button title="Upload Video" onPress={uploadVideo} />
-      <Text style={styles.status}>{uploadStatus}</Text>
-    </View>
+    <SafeAreaView className="bg-primary h-full">
+      <FlatList
+        data={posts || []}
+        keyExtractor={(item, index) => String(item.id || index)}
+        renderItem={({ item }) => (
+          <View className="items-center my-4">
+            <VideoCard post={item} icon={icons.remove} fn={removeBookMark} />
+          </View>
+        )}
+        ListHeaderComponent={() => (
+          <View className="w-full flex flex-row justify-center items-center px-4 py-10 ">
+            <Text className=" text-[#27667B] text-3xl  font-pextrabold">
+              Your Book Mark Videos
+            </Text>
+          </View>
+        )}
+        ListEmptyComponent={() => (
+          <EmptyState
+            title={"No Video Found"}
+            subtitle={"you don't bookmark any video"}
+          />
+        )}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={getAllPost} />
+        }
+        showsVerticalScrollIndicator={false}
+      />
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f5f5f5",
+  avatar: {
+    width: 55,
+    height: 55,
+    borderRadius: 20,
   },
-  status: {
-    marginTop: 20,
-    textAlign: "center",
-    color: "#333",
+  logout: {
+    width: 25,
+    height: 25,
   },
 });

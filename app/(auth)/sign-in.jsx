@@ -6,12 +6,12 @@ import FormField from "../../components/FormField";
 import { Link } from "expo-router";
 import CustomButton from "../../components/CustomButton";
 import { useRouter } from "expo-router";
-// import Axios from "../../api/axios";
-import axios from "axios";
 import AwesomeAlert from "react-native-awesome-alerts";
 import Axios from "../../api/axios";
+import { useAuthContext } from "../../context/useAuthcontext";
 
 const SignIn = () => {
+  const { setUser } = useAuthContext();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setForm] = useState({
@@ -39,8 +39,8 @@ const SignIn = () => {
 
     try {
       // API call to sign-up
-      const res = await Axios.post("/sign-in", formData);
-
+      const response = await Axios.post("/sign-in", formData);
+      setUser(response.data.user);
       setAlertData({
         show: true,
         title: "Success",
