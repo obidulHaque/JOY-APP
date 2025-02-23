@@ -16,7 +16,6 @@ export default function BookMark() {
   const getAllPost = useCallback(async () => {
     try {
       setRefreshing(true);
-      setPlay(false);
       const response = await Axios.get(`/book-mark?userId=${user.id}`);
       setPosts(response.data.posts);
     } catch (error) {

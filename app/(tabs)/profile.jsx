@@ -6,23 +6,26 @@ import {
   Image,
   RefreshControl,
   StyleSheet,
+  TouchableOpacity,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { icons, images } from "../../constants";
+import { icons } from "../../constants";
 import { useAuthContext } from "../../context/useAuthcontext";
 import Axios from "../../api/axios";
 import VideoCard from "../../components/VideoCard";
 import EmptyState from "../../components/EmptyState";
+import { useFocusEffect } from "@react-navigation/native";
+import { useRouter } from "expo-router";
+import { deleteFile } from "../../lib/deleteingFile";
 
 export default function Profile() {
   const [posts, setPosts] = useState(null);
-  const { user } = useAuthContext();
+  const { user, setIsLogged, setUser } = useAuthContext();
   const [refreshing, setRefreshing] = useState(false);
-  const [play, setPlay] = useState(false);
+  const route = useRouter();
 
   const getAllPost = useCallback(async () => {
     try {
-      setPlay(false);
       setRefreshing(true);
       const response = await Axios.get(`/get-user-post?userId=${user.id}`);
       setPosts(response.data.getPost);
@@ -32,10 +35,34 @@ export default function Profile() {
       setRefreshing(false);
     }
   }, []);
-
-  useEffect(() => {
-    getAllPost();
-  }, [getAllPost]);
+  const deletePost = useCallback(async (postId) => {
+    try {
+      setRefreshing(true);
+      const userId = user.id;
+      const res = await Axios.delete(`/create-post?postId=${postId}`, {
+        data: { userId },
+        headers: { "Content-Type": "application/json" },
+      });
+      console.log(res.data.post);
+      await deleteFile(res.data.post.videoUrl);
+      await deleteFile(res.data.post.imageUrl);
+      getAllPost();
+    } catch (error) {
+      console.error("Book mark Delete Error", error);
+    } finally {
+      setRefreshing(false);
+    }
+  });
+  useFocusEffect(
+    useCallback(() => {
+      getAllPost();
+    }, [getAllPost])
+  );
+  const logOut = () => {
+    setIsLogged(false);
+    setUser(null);
+    route.replace("/sign-in");
+  };
 
   return (
     <SafeAreaView className="bg-primary h-full">
@@ -44,26 +71,23 @@ export default function Profile() {
         keyExtractor={(item, index) => String(item.id || index)}
         renderItem={({ item }) => (
           <View className="items-center my-4">
-            <VideoCard
-              post={item}
-              icon={icons.deleteIcon}
-              setPlay={setPlay}
-              play={play}
-            />
+            <VideoCard post={item} icon={icons.deleteIcon} fn={deletePost} />
           </View>
         )}
         ListHeaderComponent={() => (
           <View className="px-10 my-10 space-y-6">
             {/* Logout Button */}
-            <View className="w-full flex flex-row justify-end px-4">
-              <Image source={icons.logout} style={styles.logout} />
-            </View>
+            <TouchableOpacity onPress={logOut}>
+              <View className="w-full flex flex-row justify-end px-4">
+                <Image source={icons.logout} style={styles.logout} />
+              </View>
+            </TouchableOpacity>
 
             {/* Profile Section */}
             <View className="flex items-center justify-center space-y-2">
-              <Image source={{ uri: user.avatar }} style={styles.avatar} />
+              <Image source={{ uri: user?.avatar }} style={styles.avatar} />
               <Text className="text-white text-lg font-semibold">
-                {user.username}
+                {user?.username}
               </Text>
             </View>
 

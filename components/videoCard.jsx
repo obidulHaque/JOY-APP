@@ -1,18 +1,27 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { images, icons } from "../constants";
 import { useVideoPlayer, VideoView } from "expo-video";
 
-const VideoCard = ({ post, icon, fn }) => {
+const VideoCard = ({ post, icon, fn, isVisible }) => {
   const [play, setPlay] = useState(false);
 
-  // Ensure the video does not play automatically
-  const player = useVideoPlayer(post.videoUrl);
+  const player = useVideoPlayer(post.videoUrl, (playerInstance) => {
+    playerInstance.loop = true;
+    playerInstance.play();
+  });
 
   const handlePlay = useCallback(() => {
     setPlay(true);
     player.play();
   }, [player]);
+
+  useEffect(() => {
+    if (!isVisible) {
+      setPlay(false);
+      player.pause();
+    }
+  }, [isVisible]);
 
   return (
     <View style={styles.container}>
@@ -27,15 +36,16 @@ const VideoCard = ({ post, icon, fn }) => {
           <Text style={styles.title} numberOfLines={1}>
             {post.title}
           </Text>
-          <Text style={styles.userName}>{post.createBy} </Text>
+          <Text style={styles.userName}>{post.createBy}</Text>
         </View>
+
         <TouchableOpacity onPress={() => fn?.(post.id)}>
           <Image source={icon} style={styles.icon} />
         </TouchableOpacity>
       </View>
 
       {play ? (
-        <View style={styles.contentContainer}>
+        <View style={styles.videoContainer}>
           <VideoView
             style={styles.video}
             player={player}
@@ -44,12 +54,12 @@ const VideoCard = ({ post, icon, fn }) => {
           />
         </View>
       ) : (
-        <TouchableOpacity onPress={handlePlay}>
-          <View style={styles.thumbnailContainer}>
-            {/* Fix Image Display Issue */}
-            <Image source={{ uri: post.imageUrl }} style={styles.thumbnail} />
-            <Image source={icons.play} style={styles.play} />
-          </View>
+        <TouchableOpacity
+          onPress={handlePlay}
+          style={styles.thumbnailContainer}
+        >
+          <Image source={{ uri: post.imageUrl }} style={styles.thumbnail} />
+          <Image source={icons.play} style={styles.play} />
         </TouchableOpacity>
       )}
     </View>
@@ -98,7 +108,7 @@ const styles = StyleSheet.create({
     height: 20,
     tintColor: "#fff",
   },
-  contentContainer: {
+  videoContainer: {
     alignItems: "center",
   },
   video: {

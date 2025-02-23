@@ -11,7 +11,7 @@ import AwesomeAlert from "react-native-awesome-alerts";
 import { useAuthContext } from "../../context/useAuthcontext";
 
 const SignUp = () => {
-  const { setUser } = useAuthContext();
+  const { setUser, setIsLogged } = useAuthContext();
   const router = useRouter();
   const [formData, setFormData] = useState({
     username: "",
@@ -46,6 +46,7 @@ const SignUp = () => {
       // API call to sign-up
       const res = await Axios.post("/sign-up", formData);
       setUser(res.data.user);
+      setIsLogged(true);
       setAlertData({
         show: true,
         title: "Success",
