@@ -9,9 +9,11 @@ import CustomButton from "../components/CustomButton";
 import { useAuthContext } from "../context/useAuthcontext";
 
 const App = () => {
-  const { isLoading, isLogged } = useAuthContext();
+  const { isLogged } = useAuthContext();
   const router = useRouter();
-  if (isLogged) return <Redirect href={"/home"} />;
+  if (isLogged) {
+    return <Redirect href="/home" />;
+  }
 
   return (
     <SafeAreaView className="bg-primary h-full">

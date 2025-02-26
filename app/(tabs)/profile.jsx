@@ -12,7 +12,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { icons } from "../../constants";
 import { useAuthContext } from "../../context/useAuthcontext";
 import Axios from "../../api/axios";
-import VideoCard from "../../components/VideoCard";
+import VideoScreen from "../../components/VideoScreen";
 import EmptyState from "../../components/EmptyState";
 import { useFocusEffect } from "@react-navigation/native";
 import { useRouter } from "expo-router";
@@ -20,7 +20,7 @@ import { deleteFile } from "../../lib/deleteingFile";
 
 export default function Profile() {
   const [posts, setPosts] = useState(null);
-  const { user, setIsLogged, setUser } = useAuthContext();
+  const { user, logout } = useAuthContext();
   const [refreshing, setRefreshing] = useState(false);
   const route = useRouter();
 
@@ -59,8 +59,7 @@ export default function Profile() {
     }, [getAllPost])
   );
   const logOut = () => {
-    setIsLogged(false);
-    setUser(null);
+    logout();
     route.replace("/sign-in");
   };
 
@@ -71,7 +70,7 @@ export default function Profile() {
         keyExtractor={(item, index) => String(item.id || index)}
         renderItem={({ item }) => (
           <View className="items-center my-4">
-            <VideoCard post={item} icon={icons.deleteIcon} fn={deletePost} />
+            <VideoScreen post={item} icon={icons.deleteIcon} fn={deletePost} />
           </View>
         )}
         ListHeaderComponent={() => (

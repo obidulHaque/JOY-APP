@@ -6,8 +6,7 @@ import { useAuthContext } from "../../context/useAuthcontext";
 import Axios from "../../api/axios";
 import EmptyState from "../../components/EmptyState";
 import { useFocusEffect } from "@react-navigation/native";
-import VideoCard from "../../components/VideoCard";
-
+import VideoScreen from "../../components/VideoScreen";
 export default function BookMark() {
   const [posts, setPosts] = useState(null);
   const { user } = useAuthContext();
@@ -54,7 +53,7 @@ export default function BookMark() {
         keyExtractor={(item, index) => String(item.id || index)}
         renderItem={({ item }) => (
           <View className="items-center my-4">
-            <VideoCard post={item} icon={icons.remove} fn={removeBookMark} />
+            <VideoScreen post={item} icon={icons.remove} fn={removeBookMark} />
           </View>
         )}
         ListHeaderComponent={() => (

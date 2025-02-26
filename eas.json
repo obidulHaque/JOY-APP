@@ -1,0 +1,20 @@
+{
+    "build": {
+        "preview": {
+            "distribution": "internal",
+            "android": {
+                "buildType": "apk"
+            }
+        },
+        "production": {
+            "env": {
+                "API_BASE_URL": "https://joy-app-nextjs-backend.vercel.app/api/",
+                "APP_KEY": "*****"
+            },
+            "distribution": "store",
+            "android": {
+                "buildType": "app-bundle"
+            }
+        }
+    }
+}

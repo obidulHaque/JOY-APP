@@ -3,7 +3,7 @@ import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { images, icons } from "../constants";
 import { useVideoPlayer, VideoView } from "expo-video";
 
-const VideoCard = ({ post, icon, fn, isVisible }) => {
+const VideoScreen = ({ post, icon, fn, isVisible }) => {
   const [play, setPlay] = useState(false);
 
   const player = useVideoPlayer(post.videoUrl, (playerInstance) => {
@@ -14,6 +14,7 @@ const VideoCard = ({ post, icon, fn, isVisible }) => {
   const handlePlay = useCallback(() => {
     setPlay(true);
     player.play();
+    player.loop = true;
   }, [player]);
 
   useEffect(() => {
@@ -51,6 +52,7 @@ const VideoCard = ({ post, icon, fn, isVisible }) => {
             player={player}
             allowsFullscreen
             allowsPictureInPicture
+            allowsVideoFrameAnalysis
           />
         </View>
       ) : (
@@ -66,7 +68,7 @@ const VideoCard = ({ post, icon, fn, isVisible }) => {
   );
 };
 
-export default VideoCard;
+export default VideoScreen;
 
 const styles = StyleSheet.create({
   container: {

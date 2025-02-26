@@ -11,7 +11,7 @@ import Axios from "../../api/axios";
 import { useAuthContext } from "../../context/useAuthcontext";
 
 const SignIn = () => {
-  const { setUser, setIsLogged } = useAuthContext();
+  const { login } = useAuthContext();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setForm] = useState({
@@ -40,8 +40,7 @@ const SignIn = () => {
     try {
       // API call to sign-up
       const response = await Axios.post("/sign-in", formData);
-      setUser(response.data.user);
-      setIsLogged(true);
+      login(response.data.user);
       setAlertData({
         show: true,
         title: "Success",

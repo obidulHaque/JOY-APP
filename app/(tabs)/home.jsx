@@ -13,7 +13,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { images, icons } from "../../constants";
 import { useAuthContext } from "../../context/useAuthcontext";
 import Axios from "../../api/axios";
-import VideoCard from "../../components/VideoCard";
+import VideoScreen from "../../components/VideoScreen";
 import EmptyState from "../../components/EmptyState";
 
 export default function HomeScreen() {
@@ -80,6 +80,15 @@ export default function HomeScreen() {
     setSearchQuery("");
     getAllPost(1, searchQuery);
   };
+  // Add Book Mark
+  const addBookMark = useCallback(async (postId) => {
+    try {
+      const userId = user.id;
+      await Axios.post(`/book-mark?postId=${postId}`, { userId });
+    } catch (error) {
+      console.error("Book mark Add Error", error);
+    }
+  });
 
   // ✅ Handle Search Input
   const handleSearch = () => {
@@ -110,10 +119,10 @@ export default function HomeScreen() {
         keyExtractor={(item, index) => String(item.id || index)}
         renderItem={({ item }) => (
           <View className="items-center">
-            <VideoCard
+            <VideoScreen
               post={item}
               icon={icons.bookmark}
-              fn={() => {}}
+              fn={addBookMark}
               isVisible={visiblePosts.has(item.id)}
             />
           </View>
